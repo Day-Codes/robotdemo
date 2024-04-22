@@ -61,21 +61,21 @@ class Robot : public frc::TimedRobot {
       if (m_stick.GetRawButtonPressed(2)) {
             feedWheel.Set(-1.0);
             shooterWheel.Set(-1);
-        } else {
+        } else if(m_stick.GetRawButtonReleased(2)) {
         
             feedWheel.Set(0.0);
-            shooterWheel.Set(-1);
+            shooterWheel.Set(0);
         }
   // Rev 
  if (m_stick.GetRawButtonPressed(1)) { 
             shooterWheel.Set(1.0); 
-        } else {
+        } else if(m_stick.GetRawButtonReleased(1)) {
             shooterWheel.Set(0.0);
         }
    //Shoot after rev
    if(m_stick.GetRawButtonPressed(3)) {
     feedWheel.Set(1);
-   } else {
+   } else if(m_stick.GetRawButtonReleased(3)){
     feedWheel.Set(0);
    }
    //Drive train 
