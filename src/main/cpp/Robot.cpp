@@ -52,31 +52,31 @@ class Robot : public frc::TimedRobot {
   m_rightMotor.AddFollower(m_rightMotorTwo);
   m_robotDrive.SetDeadband(0.1);
 // Check the left trigger axis value on the Xbox controller
-        double leftTriggerValue = m_stick.GetRawAxis(2); // Assuming the left trigger axis is axis 2
+    //    double leftTriggerValue = m_stick.GetRawAxis(2); // Assuming the left trigger axis is axis 2
 
   }
 
   void TeleopPeriodic() override {
     // Intake 
-      if (m_stick.GetRawButtonPressed(1)) {
-            m_feedWheel.Set(-1.0);
+      if (m_stick.GetRawButtonPressed(2)) {
+            feedWheel.Set(-1.0);
             shooterWheel.Set(-1);
         } else {
         
-            m_feedWheel.Set(0.0);
+            feedWheel.Set(0.0);
             shooterWheel.Set(-1);
         }
   // Rev 
- if (leftTriggerValue > 0.2) { 
+ if (m_stick.GetRawButtonPressed(1)) { 
             shooterWheel.Set(1.0); 
         } else {
             shooterWheel.Set(0.0);
         }
    //Shoot after rev
    if(m_stick.GetRawButtonPressed(3)) {
-    feedWheel.Set(1)
+    feedWheel.Set(1);
    } else {
-    feedWheel.Set(0)
+    feedWheel.Set(0);
    }
    //Drive train 
  // frc::SmartDashboard::PutData("Drive", m_robotDrive);
