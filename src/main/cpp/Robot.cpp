@@ -1,0 +1,91 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+#include <frc/Joystick.h>
+#include <frc/TimedRobot.h>
+#include <frc/drive/DifferentialDrive.h>
+#include <frc/motorcontrol/PWMSparkMax.h>
+#include <ctre/phoenix/motorcontrol/FollowerType.h>
+#include <ctre/phoenix/motorcontrol/ControlMode.h>
+#include <frc/smartdashboard/SmartDashboard.h>
+#include <ctre/Phoenix.h>
+#include <frc/DriverStation.h>
+
+#include <ctre/phoenix/motorcontrol/SupplyCurrentLimitConfiguration.h>
+
+#include <frc/motorcontrol/PWMVictorSPX.h>
+
+
+
+/**
+ * This is a demo program showing the use of the DifferentialDrive class.
+ * Runs the motors with arcade steering.
+ */
+class Robot : public frc::TimedRobot {
+  frc::PWMVictorSPX m_leftMotor{0};
+  frc::PWMVictorSPX m_rightMotor{1};
+   frc::PWMVictorSPX m_leftMotorTwo{3};
+  frc::PWMVictorSPX m_rightMotorTwo{4};
+  frc::PWMVictorSPX feedWheel{5};
+  frc::PWMVictorSPX shooterWheel{6};
+
+
+  frc::DifferentialDrive m_robotDrive{
+      [&](double output) { m_leftMotor.Set(output); },
+      [&](double output) { m_rightMotor.Set(output); }};
+  frc::Joystick m_stick{0};
+
+ public:
+  Robot() {
+    wpi::SendableRegistry::AddChild(&m_robotDrive, &m_leftMotor);
+    wpi::SendableRegistry::AddChild(&m_robotDrive, &m_rightMotor);
+  }
+
+  void RobotInit() override {
+    // We need to invert one side of the drivetrain so that positive voltages
+    // result in both sides moving forward. Depending on how your robot's
+    // gearbox is constructed, you might have to invert the left side instead.
+    m_rightMotor.SetInverted(true);
+    m_rightMotorTwo.SetInverted(true);
+  m_leftMotor.AddFollower(m_leftMotorTwo);
+  m_rightMotor.AddFollower(m_rightMotorTwo);
+  m_robotDrive.SetDeadband(0.1);
+// Check the left trigger axis value on the Xbox controller
+        double leftTriggerValue = m_stick.GetRawAxis(2); // Assuming the left trigger axis is axis 2
+
+  }
+
+  void TeleopPeriodic() override {
+    // Intake 
+      if (m_stick.GetRawButtonPressed(1)) {
+            m_feedWheel.Set(-1.0);
+            shooterWheel.Set(-1);
+        } else {
+        
+            m_feedWheel.Set(0.0);
+            shooterWheel.Set(-1);
+        }
+  // Rev 
+ if (leftTriggerValue > 0.2) { 
+            shooterWheel.Set(1.0); 
+        } else {
+            shooterWheel.Set(0.0);
+        }
+   //Shoot after rev
+   if(m_stick.GetRawButtonPressed(3)) {
+    feedWheel.Set(1)
+   } else {
+    feedWheel.Set(0)
+   }
+   //Drive train 
+ // frc::SmartDashboard::PutData("Drive", m_robotDrive);
+    m_robotDrive.ArcadeDrive(-m_stick.GetY(), -m_stick.GetX());
+  }
+};
+
+#ifndef RUNNING_FRC_TESTS
+int main() {
+  return frc::StartRobot<Robot>();
+}
+#endif
