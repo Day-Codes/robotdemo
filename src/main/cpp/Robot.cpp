@@ -11,9 +11,10 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <ctre/Phoenix.h>
 #include <frc/DriverStation.h>
-
+#include <frc/Encoder.h>
+#include <frc/simulation/DifferentialDrivetrainSim.h>
 #include <ctre/phoenix/motorcontrol/SupplyCurrentLimitConfiguration.h>
-
+#include <frc/smartdashboard/Field2d.h>
 #include <frc/motorcontrol/PWMVictorSPX.h>
 
 
@@ -31,10 +32,20 @@ class Robot : public frc::TimedRobot {
   frc::PWMVictorSPX shooterWheel{6};
 
 
+
+
   frc::DifferentialDrive m_robotDrive{
       [&](double output) { m_leftMotor.Set(output); },
       [&](double output) { m_rightMotor.Set(output); }};
   frc::Joystick m_stick{0};
+
+frc::sim::DifferentialDrivetrainSim m_driveSim =
+  frc::sim::DifferentialDrivetrainSim::CreateKitbotSim(
+    frc::sim::DifferentialDrivetrainSim::KitbotMotor::DualCIMPerSide, // 2 CIMs per side.
+    frc::sim::DifferentialDrivetrainSim::KitbotGearing::k10p71,       // 10.71:1
+    frc::sim::DifferentialDrivetrainSim::KitbotWheelSize::kSixInch    // 6" diameter wheels.
+);
+frc::Field2d m_field;
 
  public:
   Robot() {
@@ -53,7 +64,7 @@ class Robot : public frc::TimedRobot {
   m_robotDrive.SetDeadband(0.1);
 // Check the left trigger axis value on the Xbox controller
     //    double leftTriggerValue = m_stick.GetRawAxis(2); // Assuming the left trigger axis is axis 2
-
+ frc::SmartDashboard::PutData("Field", &m_field);
   }
 
   void TeleopPeriodic() override {
