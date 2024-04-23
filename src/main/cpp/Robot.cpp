@@ -65,6 +65,8 @@ frc::Field2d m_field;
 // Check the left trigger axis value on the Xbox controller
     //    double leftTriggerValue = m_stick.GetRawAxis(2); // Assuming the left trigger axis is axis 2
  frc::SmartDashboard::PutData("Field", &m_field);
+ // Do this in either robot periodic or subsystem periodic
+//m_field.SetRobotPose(m_odometry.GetPose());
   }
 
   void TeleopPeriodic() override {
