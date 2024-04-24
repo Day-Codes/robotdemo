@@ -24,8 +24,8 @@
  * Runs the motors with arcade steering.
  */
 class Robot : public frc::TimedRobot {
-  frc::PWMVictorSPX m_leftMotor{0};
-  frc::PWMVictorSPX m_rightMotor{1};
+  frc::PWMVictorSPX m_leftMotor{8};
+  frc::PWMVictorSPX m_rightMotor{7};
    frc::PWMVictorSPX m_leftMotorTwo{3};
   frc::PWMVictorSPX m_rightMotorTwo{4};
   frc::PWMVictorSPX feedWheel{5};
@@ -69,6 +69,8 @@ frc::Field2d m_field;
 //m_field.SetRobotPose(m_odometry.GetPose());
   }
 
+  void Auto
+
   void TeleopPeriodic() override {
     // Intake 
       if (m_stick.GetRawButtonPressed(2)) {
@@ -96,6 +98,8 @@ frc::Field2d m_field;
     m_robotDrive.ArcadeDrive(-m_stick.GetY(), -m_stick.GetX());
   }
 };
+
+
 
 #ifndef RUNNING_FRC_TESTS
 int main() {
