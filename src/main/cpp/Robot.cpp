@@ -10,6 +10,7 @@
 #include <ctre/phoenix/motorcontrol/ControlMode.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <ctre/Phoenix.h>
+#include <frc/Timer.h>
 #include <frc/DriverStation.h>
 #include <frc/Encoder.h>
 #include <frc/simulation/DifferentialDrivetrainSim.h>
@@ -46,7 +47,7 @@ frc::sim::DifferentialDrivetrainSim m_driveSim =
     frc::sim::DifferentialDrivetrainSim::KitbotWheelSize::kSixInch    // 6" diameter wheels.
 );
 frc::Field2d m_field;
-
+frc::Timer timer;
  public:
   Robot() {
     wpi::SendableRegistry::AddChild(&m_robotDrive, &m_leftMotor);
@@ -65,11 +66,26 @@ frc::Field2d m_field;
 // Check the left trigger axis value on the Xbox controller
     //    double leftTriggerValue = m_stick.GetRawAxis(2); // Assuming the left trigger axis is axis 2
  frc::SmartDashboard::PutData("Field", &m_field);
+ frc::SmartDashboard::PutData("Drive", m_robotDrive);
  // Do this in either robot periodic or subsystem periodic
 //m_field.SetRobotPose(m_odometry.GetPose());
   }
 
-  void Auto
+  void AutonomousInit() override {
+        // Set the timer to count for 3 seconds
+        timer.Reset();
+        timer.Start();
+    }
+
+    void AutonomousPeriodic() override {
+        // Drive the robot backward at a constant speed for 3 seconds
+        if (timer.Get() < 3.0) {
+            m_robotDrive.ArcadeDrive(0.3,0.4);
+        } else {
+            m_robotDrive.ArcadeDrive(0.0, 0.0); // Stop driving after 3 seconds
+        }
+    }
+
 
   void TeleopPeriodic() override {
     // Intake 
