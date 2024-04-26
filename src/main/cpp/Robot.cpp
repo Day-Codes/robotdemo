@@ -11,6 +11,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <ctre/Phoenix.h>
 #include <frc/Timer.h>
+#include <iostream>
 #include <frc/DriverStation.h>
 #include <frc/Encoder.h>
 #include <frc/simulation/DifferentialDrivetrainSim.h>
@@ -25,13 +26,12 @@
  * Runs the motors with arcade steering.
  */
 class Robot : public frc::TimedRobot {
-  frc::PWMVictorSPX m_leftMotor{8};
-  frc::PWMVictorSPX m_rightMotor{7};
+  frc::PWMVictorSPX m_leftMotor{1};
+  frc::PWMVictorSPX m_rightMotor{2};
    frc::PWMVictorSPX m_leftMotorTwo{3};
   frc::PWMVictorSPX m_rightMotorTwo{4};
   frc::PWMVictorSPX feedWheel{5};
   frc::PWMVictorSPX shooterWheel{6};
-
 
 
 
@@ -54,19 +54,29 @@ frc::Timer timer;
     wpi::SendableRegistry::AddChild(&m_robotDrive, &m_rightMotor);
   }
 
+ // bool isShooterWheelSpinning() {
+ //   return true;
+//}
+
   void RobotInit() override {
+    bool booleanFlag = false;
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-    m_rightMotor.SetInverted(true);
+    m_rightMotor.SetInverted(false);
+    m_leftMotorTwo.SetInverted(true);
     m_rightMotorTwo.SetInverted(true);
   m_leftMotor.AddFollower(m_leftMotorTwo);
   m_rightMotor.AddFollower(m_rightMotorTwo);
   m_robotDrive.SetDeadband(0.1);
+
+  
 // Check the left trigger axis value on the Xbox controller
     //    double leftTriggerValue = m_stick.GetRawAxis(2); // Assuming the left trigger axis is axis 2
  frc::SmartDashboard::PutData("Field", &m_field);
- frc::SmartDashboard::PutData("Drive", m_robotDrive);
+ 
+ //frc::SmartDashboard::PutBoolean("Shooter Wheel", isShooterWheelSpinning);
+ //frc::SmartDashboard::Put("Drive", m_robotDrive);
  // Do this in either robot periodic or subsystem periodic
 //m_field.SetRobotPose(m_odometry.GetPose());
   }
@@ -79,21 +89,41 @@ frc::Timer timer;
 
     void AutonomousPeriodic() override {
         // Drive the robot backward at a constant speed for 3 seconds
-        if (timer.Get() < 3.0) {
+        if (timer.Get() < 3.0_s) {
             m_robotDrive.ArcadeDrive(0.3,0.4);
         } else {
             m_robotDrive.ArcadeDrive(0.0, 0.0); // Stop driving after 3 seconds
         }
     }
 
+void RobotPeridoic() override {
+feedWheel.Get();
+  // Feed/Shooter Wheels
+     frc::SmartDashboard::PutNumber("Feed Wheel", feedWheel.Get());  
+     frc::SmartDashboard::PutNumber("Shooter Wheels", shooterWheel.Get());  
+     // Drive Wheels
+     frc::SmartDashboard::PutNumber("Left Back", m_leftMotorTwo.Get());  
+     frc::SmartDashboard::PutNumber("Left Front", m_leftMotor.Get());  
+     frc::SmartDashboard::PutNumber("Right Front", m_rightMotor.Get());  
+     frc::SmartDashboard::PutNumber("Right Back", m_rightMotorTwo.Get());  
+  //   frc::SmartDashboard::PutNumber("Drive", m_robotDrive);
+     // Run Motor Checks
+   //   frc::SmartDashboard::GetString("Is it a Dead Feed Wheel?", feedWheel.IsAlive());
+}
+
+void DisabledPeriodic() override {
+ // feedWheel.Set(0.5);
+}
 
   void TeleopPeriodic() override {
+
     // Intake 
-      if (m_stick.GetRawButtonPressed(2)) {
+      if (m_stick.GetRawButtonPressed(4)) {
+      //   booleanFlag = true;
             feedWheel.Set(-1.0);
             shooterWheel.Set(-1);
-        } else if(m_stick.GetRawButtonReleased(2)) {
-        
+        } else if(m_stick.GetRawButtonReleased(4)) {
+       //   booleanFlag = false;
             feedWheel.Set(0.0);
             shooterWheel.Set(0);
         }
