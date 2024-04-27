@@ -90,14 +90,16 @@ frc::Timer timer;
     void AutonomousPeriodic() override {
         // Drive the robot backward at a constant speed for 3 seconds
         if (timer.Get() < 3.0_s) {
-            m_robotDrive.ArcadeDrive(0.3,0.4);
+            m_rightMotor.Set(0.5);
+            m_leftMotor.Set(0.5);
         } else {
-            m_robotDrive.ArcadeDrive(0.0, 0.0); // Stop driving after 3 seconds
+             m_rightMotor.Set(0);
+            m_leftMotor.Set(0);
         }
     }
 
-void RobotPeridoic() override {
-feedWheel.Get();
+void RobotPeriodic() override {
+
   // Feed/Shooter Wheels
      frc::SmartDashboard::PutNumber("Feed Wheel", feedWheel.Get());  
      frc::SmartDashboard::PutNumber("Shooter Wheels", shooterWheel.Get());  
